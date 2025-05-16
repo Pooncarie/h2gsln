@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "Q2QtJp6jdy0=",
+  "success": true,
+  "projectFilePath": "/Users/wayneinnes/Development/h2gsln/h2glib/h2glib.fsproj",
+  "expectedPackageFiles": [
+    "/Users/wayneinnes/.nuget/packages/fsharp.core/9.0.202/fsharp.core.9.0.202.nupkg.sha512",
+    "/Users/wayneinnes/.nuget/packages/htmlagilitypack/1.12.1/htmlagilitypack.1.12.1.nupkg.sha512"
+  ],
+  "logs": []
+}
