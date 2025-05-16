@@ -29,6 +29,6 @@ let main argv =
                     </div>
                 </div>
             </form>"
-    printfn "%s" (parseHtml html4)
+    printfn "%s" (parseHtml html2)
 
     0 

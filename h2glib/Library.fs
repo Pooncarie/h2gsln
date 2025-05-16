@@ -15,20 +15,23 @@ let isFlagElement =  function
     | "scope" | "selected"  -> true
     | _ -> false 
 
+// e.g. data-bs-toggle => _dataBsToggle"
 let fixData (attr: string) =
     let mutable bits = attr.Split('-') |> Array.skip 1
     "_data" +  (("", bits) ||> Array.fold (fun acc x -> acc + string (Char.ToUpper(x[0])) + x.Substring(1)))
 
+// e.g. aria-label => _ariaLabel
 let fixAria (attr: string) =
     let bits = attr.Split('-')
-    "_" + bits[0] + string (Char.ToUpper(bits[1][2])) + bits[1].Substring(1);
+    "_" + bits[0] + string (Char.ToUpper(bits[1][0])) + bits[1].Substring(1);
 
+// e.g. role => _role
 let fixRole (attr: string) =
-    let bits = attr.Split('-')
     "_role" + string (Char.ToUpper(attr[0])) + attr.Substring(1);
 
+// e.g. hx-post => _hxPost
 let fixHtmx (attr: string) =
-    let mutable bits = attr.Split('-') |> Array.skip 1
+    let bits = attr.Split('-') |> Array.skip 1
     "_hx" +  (("", bits) ||> Array.fold (fun acc x -> acc + string (Char.ToUpper(x[0])) + x.Substring(1)))
 
 let processAttributes(node: HtmlNode) =
