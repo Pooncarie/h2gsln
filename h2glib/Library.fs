@@ -51,7 +51,10 @@ let processAttributes(node: HtmlNode) =
             attList <- attList @ [attrStr]
     
         let joinedAtts =  ("", attList) ||> List.fold (fun acc x -> if acc = "" then acc + x else acc +  "; " + x)
-        $"[{joinedAtts}]\n"
+        if node.HasChildNodes || isVoidElement node.Name then
+            $"[{joinedAtts}]\n"
+        else
+            $"[{joinedAtts}] []\n"
     else
         if isVoidElement node.Name || node.HasChildNodes then
             "[]\n"
