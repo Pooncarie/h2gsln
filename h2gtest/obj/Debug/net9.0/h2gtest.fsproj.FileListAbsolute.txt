@@ -115,3 +115,4 @@
 /Users/wayneinnes/Development/h2gsln/h2gtest/bin/Debug/net9.0/h2glib.dll
 /Users/wayneinnes/Development/h2gsln/h2gtest/bin/Debug/net9.0/h2glib.pdb
 /Users/wayneinnes/Development/h2gsln/h2gtest/bin/Debug/net9.0/h2glib.xml
+/Users/wayneinnes/Development/h2gsln/h2gtest/obj/Debug/net9.0/h2gtest.sourcelink.json

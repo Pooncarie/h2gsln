@@ -31,3 +31,4 @@
 /Users/wayneinnes/Development/h2gsln/h2g/obj/Debug/net9.0/h2g.pdb
 /Users/wayneinnes/Development/h2gsln/h2g/obj/Debug/net9.0/h2g.genruntimeconfig.cache
 /Users/wayneinnes/Development/h2gsln/h2g/obj/Debug/net9.0/ref/h2g.dll
+/Users/wayneinnes/Development/h2gsln/h2g/obj/Debug/net9.0/h2g.sourcelink.json
