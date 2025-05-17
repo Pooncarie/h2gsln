@@ -9,14 +9,14 @@ let Setup () =
 
 [<Test>]
 let ``parseHtml simple div with text`` () =
-    let expected = "div []\n[\n  str \"Test\"\n]\n"
+    let expected = "div [] [\n  str \"Test\"\n]\n"
     let html = getFromString "<div>Test</div>"
     let actual = parseHtml html
     Assert.That(actual, Is.EqualTo(expected))
 
 [<Test>]
 let ``parseHtml nested elements`` () =
-    let expected = "div []\n[\n  span []\n  [\n    str \"Hello\"\n  ]\n]\n"
+    let expected = "div [] [\n  span [] [\n    str \"Hello\"\n  ]\n]\n"
     let html = getFromString "<div><span>Hello</span></div>"
     let actual = parseHtml html
     Assert.That(actual, Is.EqualTo(expected))
@@ -51,7 +51,7 @@ let ``parseHtml void element`` () =
 
 [<Test>]
 let ``parseHtml with comment`` () =
-    let expected = "body []\n[\n  <!-- a comment -->\n]\n"
+    let expected = "body [] [\n  <!-- a comment -->\n]\n"
     let html = getFromString "<body><!-- a comment --></body>"
     let actual = parseHtml html
     Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))

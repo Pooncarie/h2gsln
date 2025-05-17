@@ -32,7 +32,8 @@ let fixRole (attr: string) =
 // e.g. hx-post => _hxPost
 let fixHtmx (attr: string) =
     let bits = attr.Split('-') |> Array.skip 1
-    "_hx" +  (("", bits) ||> Array.fold (fun acc x -> acc + string (Char.ToUpper(x[0])) + x.Substring(1)))
+    "_hx" +  (("", bits) ||> 
+        Array.fold (fun acc x -> acc + string (Char.ToUpper(x[0])) + x.Substring(1)))
 
 let processAttributes(node: HtmlNode) =
     let attributes = node.Attributes
@@ -51,26 +52,26 @@ let processAttributes(node: HtmlNode) =
             attList <- attList @ [attrStr]
     
         let joinedAtts =  ("", attList) ||> List.fold (fun acc x -> if acc = "" then acc + x else acc +  "; " + x)
-        if node.HasChildNodes || isVoidElement node.Name then
-            $"[{joinedAtts}]\n"
-        else
-            $"[{joinedAtts}] []\n"
+        match node with
+        | n when n.HasChildNodes -> $"[{joinedAtts}]  "
+        | n when isVoidElement n.Name -> $"[{joinedAtts}]\n"
+        | _ -> $"[{joinedAtts}] []\n"
     else
-        if isVoidElement node.Name || node.HasChildNodes then
-            "[]\n"
-        else
-            "[] []\n"
+        match node with
+        | n when n.HasChildNodes -> "[] "
+        | n when isVoidElement n.Name -> "[]\n"
+        | _ -> "[] []\n"
 
 let rec traverse (node: HtmlNode) (depth: int) (sb: StringBuilder)=
     if node.NodeType = HtmlNodeType.Element then
         sb.Append($"{new string(' ', depth * 2)}{node.Name} ") |> ignore
-        sb.Append(processAttributes node   ) |> ignore
+        sb.Append(processAttributes node) |> ignore
     else 
         if node.NodeType = HtmlNodeType.Comment then
             sb.Append($"{new string(' ', depth * 2)}{node.InnerHtml.Trim()}\n") |> ignore
 
     if node.ChildNodes.Count > 0 then
-        sb.Append($"{new string(' ', depth * 2)}[\n") |> ignore
+        sb.Append("[\n") |> ignore
         for child in node.ChildNodes do
             traverse child (depth + 1) sb
         if node.NodeType = HtmlNodeType.Element then
@@ -78,7 +79,8 @@ let rec traverse (node: HtmlNode) (depth: int) (sb: StringBuilder)=
     else
         if node.NodeType = HtmlNodeType.Text then
             if String.IsNullOrWhiteSpace(node.InnerText.Trim()) = false then
-                sb.Append($"{new string(' ', depth * 2)}str \"{node.InnerText.Trim()}\"\n") |> ignore
+                let trimmedText = node.InnerText.Trim().Replace("\"", "\\\"")
+                sb.Append($"{new string(' ', depth * 2)}str \"{trimmedText}\"\n") |> ignore
 
 let parseHtml (htmlDoc: HtmlDocument) =
     let doc = htmlDoc.DocumentNode
