@@ -2,6 +2,7 @@
 
 open System
 open System.Text
+open System.Linq
 open HtmlAgilityPack
 
 let private isVoidElement (name: string) =
@@ -84,17 +85,23 @@ let rec private traverse (node: HtmlNode) (depth: int) (sb: StringBuilder)=
                 let trimmedText = node.InnerText.Trim().Replace("\"", "\\\"")
                 sb.Append($"{new string(' ', depth * 2)}str \"{trimmedText}\"\n") |> ignore
 
-let parseHtml (htmlDoc: HtmlDocument) =
-    let doc = htmlDoc.DocumentNode
-    let sb = new StringBuilder()
 
-    for child in doc.ChildNodes do
-        traverse child 0 sb
-    sb.ToString()
+let parseHtml (htmlDoc: HtmlDocument) =
+    if htmlDoc.ParseErrors.Count() > 0 then
+        let errors = htmlDoc.ParseErrors |> Seq.map (fun e -> $"{e.Reason} at line {e.Line} column {e.LinePosition}")
+        Error (String.Join("\n", errors))
+    else
+        let doc = htmlDoc.DocumentNode
+        let sb = new StringBuilder()
+
+        for child in doc.ChildNodes do
+            traverse child 0 sb
+        Ok (sb.ToString())
 
 let getFromWeb (url: string) =
     let web = new HtmlWeb();
-    web.Load(url);
+    let doc = web.Load(url);
+    doc
 
 let getFromFile (file: string) =
     let doc = new HtmlDocument();
