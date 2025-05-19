@@ -86,7 +86,7 @@ let rec private traverse (node: HtmlNode) (depth: int) (sb: StringBuilder)=
                 sb.Append($"{new string(' ', depth * 2)}str \"{trimmedText}\"\n") |> ignore
 
 
-let parseHtml (htmlDoc: HtmlDocument) =
+let private parseHtml (htmlDoc: HtmlDocument) =
     if htmlDoc.ParseErrors.Count() > 0 then
         let errors = htmlDoc.ParseErrors |> Seq.map (fun e -> $"{e.Reason} at line {e.Line} column {e.LinePosition}")
         Error (String.Join("\n", errors))
@@ -99,18 +99,42 @@ let parseHtml (htmlDoc: HtmlDocument) =
         Ok (sb.ToString())
 
 let getFromWeb (url: string) =
-    let web = new HtmlWeb();
-    let doc = web.Load(url);
-    doc
+    match url with
+    | null -> Error "URL cannot be null"
+    | _ when url.Trim() = "" -> Error "URL cannot be empty"
+    | _ when not (url.StartsWith("http://") || url.StartsWith("https://")) -> Error "URL must start with http:// or https://"
+    | _ ->
+        try
+            let web = new HtmlWeb()
+            web.OverrideEncoding <- Encoding.UTF8;
+            parseHtml (web.Load(url))
+        with
+        | :? System.Net.WebException as ex -> Error $"Web exception: {ex.Message}"
+        | :? System.UriFormatException as ex -> Error $"URI format exception: {ex.Message}"
+        | ex -> Error $"Unexpected exception: {ex.Message}"
 
 let getFromFile (file: string) =
-    let doc = new HtmlDocument();
-    doc.Load(file);
-    doc
-
+    match file with
+    | null -> Error "File path cannot be null"
+    | _ when file.Trim() = "" -> Error "File path cannot be empty"
+    | _ when not (System.IO.File.Exists(file)) -> Error "File does not exist"
+    | _ ->
+        try
+            let doc = new HtmlDocument();
+            doc.Load(file);
+            parseHtml doc
+        with
+        | :? System.IO.FileNotFoundException as ex -> Error $"File not found: {ex.Message}"
+        | :? System.UnauthorizedAccessException as ex -> Error $"Unauthorized access: {ex.Message}"
+        | ex -> Error $"Unexpected exception: {ex.Message}"
+        
 let getFromString (html: string) =
-    let doc = new HtmlDocument();
-    doc.LoadHtml(html);
-    doc
+    match html with
+    | null -> Error "HTML string cannot be null"
+    | _ when html.Trim() = "" -> Error "HTML string cannot be empty"
+    | _ ->
+        let doc = new HtmlDocument();
+        doc.LoadHtml(html);
+        parseHtml doc
     
 

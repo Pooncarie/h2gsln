@@ -30,7 +30,7 @@ let main argv =
                 </div>
             </form>"
     let html5 = getFromString "<input type=\"text\" title=\"email_address\" autocomplete=\"off\" required pattern=\"[^@]+@[^@]+.[a-zA-Z]{2,6}\" />"
-    match parseHtml html4 with
+    match html2 with
     | Ok s -> printfn "%s" s
     | Error e -> printfn "Error: %s" e
 
