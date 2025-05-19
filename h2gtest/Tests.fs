@@ -55,3 +55,13 @@ let ``parseHtml with comment`` () =
     let html = getFromString "<body><!-- a comment --></body>"
     let actual = parseHtml html
     Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
+
+[<Test>]
+// Test for role attribute
+let ``parseHtml with role attribute`` () =
+    let expected = "div [_role \"button\"] []\n"
+    let html = getFromString "<div role=\"button\"></div>"
+    let actual = parseHtml html
+    Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
+
+

@@ -31,10 +31,6 @@ let private fixAria (attr: HtmlAttribute) =
     let name = "_" + bits[0] + string (Char.ToUpper(bits[1][0])) + bits[1].Substring(1);
     $"{name} \"{attr.Value}\""
 
-// e.g. role => _role
-let private fixRole (attr: HtmlAttribute) =
-    "_role" + string (Char.ToUpper(attr.Value[0])) + attr.Value.Substring(1);
-
 // e.g. hx-post => _hxPost
 let private fixHtmx (attr: HtmlAttribute) =
     let bits = attr.Name.Split('-') |> Array.skip 1
@@ -52,7 +48,6 @@ let private attributesToString  (attributes: HtmlAttributeCollection)  =
                 | name when name.StartsWith("data-") -> fixData attr
                 | name when name.StartsWith("aria-") -> fixAria attr
                 | name when name.StartsWith("hx-") -> fixHtmx attr
-                | name when name = "role" -> fixRole attr
                 | name when isFlagElement name -> $"_{attr.Name}"
                 | _ -> $"_{attr.Name} \"{attr.Value}\""
             attList <- attList @ [attrStr]
