@@ -51,7 +51,7 @@ let ``parseHtml void element`` () =
 
 [<Test>]
 let ``parseHtml with comment`` () =
-    let expected = "body [] [\n  <!-- a comment -->\n]\n"
+    let expected = "body [] [\n]\n"
     let html = getFromString "<body><!-- a comment --></body>"
     let actual = parseHtml html
     Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))

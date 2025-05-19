@@ -29,6 +29,7 @@ let main argv =
                     </div>
                 </div>
             </form>"
-    printfn "%s" (parseHtml html2)
+    let html5 = getFromString "<input type=\"text\" title=\"email_address\" autocomplete=\"off\" required pattern=\"[^@]+@[^@]+.[a-zA-Z]{2,6}\" />"
+    printfn "%s" (parseHtml html5)
 
     0 

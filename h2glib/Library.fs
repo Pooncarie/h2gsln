@@ -4,53 +4,63 @@ open System
 open System.Text
 open HtmlAgilityPack
 
-let isVoidElement (name: string) =
+let private isVoidElement (name: string) =
     match name with
-    | "area" | "base" | "br" | "col" | "embed" | "hr" | "img" | "input" | "link" | "meta" | "param" | "source" | "track" | "wbr" -> true
+    | "area" | "base" | "br" | "col" | "embed" | "hr" | "img" | "input" 
+    | "link" | "meta" | "param" | "source" | "track" | "wbr" -> true
     | _ -> false
 
-let isFlagElement =  function
-    | "async" | "autofocus" | "autoplay" | "checked" | "controls" | "default" | "defer" | "disabled" | "hidden" 
-    | "ismap" | "loop" | "multiple" | "muted" | "novalidate" | "readonly"  | "required" | "reversed" 
+let private isFlagElement =  function
+    | "async" | "autofocus" | "autoplay" | "checked" | "controls" 
+    | "default" | "defer" | "disabled" | "hidden" 
+    | "ismap" | "loop" | "multiple" | "muted" | "novalidate" 
+    | "readonly"  | "required" | "reversed" 
     | "scope" | "selected"  -> true
     | _ -> false 
 
 // e.g. data-bs-toggle => _dataBsToggle"
-let fixData (attr: string) =
-    let mutable bits = attr.Split('-') |> Array.skip 1
-    "_data" +  (("", bits) ||> Array.fold (fun acc x -> acc + string (Char.ToUpper(x[0])) + x.Substring(1)))
+let private fixData (attr: HtmlAttribute) =
+    let mutable bits = attr.Name.Split('-') |> Array.skip 1
+    let name = "_data" +  (("", bits) ||> Array.fold (
+            fun acc x -> acc + string (Char.ToUpper(x[0])) + x.Substring(1))) 
+    $"{name} \"{attr.Value}\""
 
 // e.g. aria-label => _ariaLabel
-let fixAria (attr: string) =
-    let bits = attr.Split('-')
-    "_" + bits[0] + string (Char.ToUpper(bits[1][0])) + bits[1].Substring(1);
+let private fixAria (attr: HtmlAttribute) =
+    let bits = attr.Name.Split('-')
+    let name = "_" + bits[0] + string (Char.ToUpper(bits[1][0])) + bits[1].Substring(1);
+    $"{name} \"{attr.Value}\""
 
 // e.g. role => _role
-let fixRole (attr: string) =
-    "_role" + string (Char.ToUpper(attr[0])) + attr.Substring(1);
+let private fixRole (attr: HtmlAttribute) =
+    "_role" + string (Char.ToUpper(attr.Value[0])) + attr.Value.Substring(1);
 
 // e.g. hx-post => _hxPost
-let fixHtmx (attr: string) =
-    let bits = attr.Split('-') |> Array.skip 1
-    "_hx" +  (("", bits) ||> 
+let private fixHtmx (attr: HtmlAttribute) =
+    let bits = attr.Name.Split('-') |> Array.skip 1
+    let name = "_hx" +  (("", bits) ||> 
         Array.fold (fun acc x -> acc + string (Char.ToUpper(x[0])) + x.Substring(1)))
+    $"{name} \"{attr.Value}\""
 
-let processAttributes(node: HtmlNode) =
-    let attributes = node.Attributes
+let private attributesToString  (attributes: HtmlAttributeCollection)  =
+    let mutable attList = []
     
     if attributes.Count > 0 then
-        let mutable attList = []
         for attr in attributes do
             let attrStr = 
                 match attr.Name with
-                | name when name.StartsWith("data-") -> $"{fixData(attr.Name)} \"{attr.Value}\""
-                | name when name.StartsWith("aria-") -> $"{fixAria(attr.Name)} \"{attr.Value}\""
-                | name when name.StartsWith("hx-") -> $"{fixHtmx(attr.Name)} \"{attr.Value}\""
-                | name when name = "role" -> $"{fixRole attr.Value}"
+                | name when name.StartsWith("data-") -> fixData attr
+                | name when name.StartsWith("aria-") -> fixAria attr
+                | name when name.StartsWith("hx-") -> fixHtmx attr
+                | name when name = "role" -> fixRole attr
                 | name when isFlagElement name -> $"_{attr.Name}"
                 | _ -> $"_{attr.Name} \"{attr.Value}\""
             attList <- attList @ [attrStr]
-    
+    attList
+
+let private processAttributes(node: HtmlNode) =
+    let attList = attributesToString node.Attributes
+    if attList.Length > 0 then
         let joinedAtts =  ("", attList) ||> List.fold (fun acc x -> if acc = "" then acc + x else acc +  "; " + x)
         match node with
         | n when n.HasChildNodes -> $"[{joinedAtts}]  "
@@ -62,13 +72,10 @@ let processAttributes(node: HtmlNode) =
         | n when isVoidElement n.Name -> "[]\n"
         | _ -> "[] []\n"
 
-let rec traverse (node: HtmlNode) (depth: int) (sb: StringBuilder)=
+let rec private traverse (node: HtmlNode) (depth: int) (sb: StringBuilder)=
     if node.NodeType = HtmlNodeType.Element then
         sb.Append($"{new string(' ', depth * 2)}{node.Name} ") |> ignore
         sb.Append(processAttributes node) |> ignore
-    else 
-        if node.NodeType = HtmlNodeType.Comment then
-            sb.Append($"{new string(' ', depth * 2)}{node.InnerHtml.Trim()}\n") |> ignore
 
     if node.ChildNodes.Count > 0 then
         sb.Append("[\n") |> ignore
