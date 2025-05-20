@@ -1,175 +1,240 @@
 ﻿open Giraffe.ViewEngine
 open Giraffe.ViewEngine.Accessibility
 
-let private _dataBsToggle = attr "data-bs-target"
-let private _dataBsTarget = attr "data-bs-toggle"
+let  _bgcolor = attr "bgcolor"
+let  _cellpadding = attr "cellpadding"
+let  _cellspacing = attr "cellspacing"
+let  _align = attr "align"
+let  _valign = attr "valign"
+let  _autocapitalize = attr "autocapitalize"
+let  _autocorrect = attr "autocorrect"
+let _op = attr "op"
+let _language = attr "language"
+
+let  center = tag "center"
 
 let f1 = 
-  html [_lang "en"]  [
-    head [] [
-      meta [_charset "utf-8"]
-      meta [_name "viewport"; _content "width=device-width, initial-scale=1"]
-      meta [_name "color-scheme"; _content "light dark"]
-      link [_rel "stylesheet"; _href "https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"; _integrity "sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7"; _crossorigin "anonymous"]
-      link [_rel "stylesheet"; _href "/css/mynewwebsite.css"]
-      link [_rel "stylesheet"; _href "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"]
-      title [] [
-        str "Home"
+ html [] [
+  head [] [
+    meta [_httpEquiv "Content-Type"; _content "text/html; charset=iso-8859-1"]
+    title [] [
+      str "Riverside Golf Club | OneGolf"
+    ]
+    meta [_name "viewport"; _content "width=device-width, initial-scale=1, shrink-to-fit=no"]
+    link [_href "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"; _rel "stylesheet"]
+    link [_href "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"; _rel "stylesheet"; _integrity "sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"; _crossorigin "anonymous"]
+    script [_type "text/javascript"; _src "/scripts/miclub.js"]  [
+    ]
+    link [_href "/style/productStyle/privateClubProduct.css"; _rel "stylesheet"; _type "text/css"]
+    link [_href "/style/cms.css"; _rel "stylesheet"; _type "text/css"]
+    link [_href "/style/custom.css"; _rel "stylesheet"; _type "text/css"]
+    link [_href "/style/p7pmh0.css"; _rel "stylesheet"; _type "text/css"]
+  ]
+  body [_class "oneGolf"]  [
+    nav [] [
+      div [_class "logo"]  [
+        img [_src "/product-images/onegolf-logo.png"; _alt "logo"]
+      ]
+      div [_class "menu"]  [
+        ul [] [
+          li [] [
+            a [_href "/security/login.msp"]  [
+              str "Home"
+            ]
+          ]
+          li [] [
+            a [_href "https://www.miclub.com.au/cms/solutions-services/golf-management/onegolf/"; _target "_blank"]  [
+              str "About OneGolf"
+            ]
+          ]
+          li [] [
+            a [_href "/guests/contact.mhtml"]  [
+              str "Contact"
+            ]
+          ]
+          li [] [
+            a [_href "https://1golfhelp.miclub.com.au/support/solutions/folders/14000127940"; _target "_blank"]  [
+              str "Help"
+            ]
+          ]
+        ]
+      ]
+      a [_id "openOffcanvasBtn"; _class "hamburger-menu"; _data "bs-toggle" "offcanvas"; _href "#offcanvasExample"; _roleButton; _ariaControls "offcanvasExample"]  [
+        span [_class "bar"] []
+        span [_class "bar"] []
+        span [_class "bar"] []
+      ]
+      div [_id "offcanvasBackdrop"; _style "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); visibility: hidden; z-index: 1040;"] []
+      div [_class "offcanvas offcanvas-start"; _tabindex "-1"; _id "offcanvasExample"; _ariaLabelledBy "offcanvasExampleLabel"]  [
+        div [_class "offcanvas-header"]  [
+          button [_id "offcanvasCloseBtn"; _type "button"; _class "btn-close text-reset"; _data "bs-dismiss" "offcanvas"; _ariaLabel "Close"]  [
+            span [_class "bar"] []
+            span [_class "bar"] []
+          ]
+        ]
+        div [_class "offcanvas-body"]  [
+          div [] [
+            ul [] [
+              li [] [
+                a [_href "/security/login.msp"]  [
+                  str "Home"
+                ]
+              ]
+              li [] [
+                a [_href "https://www.miclub.com.au/cms/solutions-services/golf-management/onegolf/"; _target "_blank"]  [
+                  str "About OneGolf"
+                ]
+              ]
+              li [] [
+                a [_href "/guests/contact.mhtml"]  [
+                  str "Contact"
+                ]
+              ]
+              li [] [
+                a [_href "https://1golfhelp.miclub.com.au/support/solutions/folders/14000127940"; _target "_blank"]  [
+                  str "Help"
+                ]
+              ]
+            ]
+          ]
+        ]
       ]
     ]
-    body [] [
-      header [] [
-        nav [_class "navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-company-red border-bottom box-shadow mb-3"]  [
-          div [_class "container-fluid"]  [
-            a [_class "navbar-brand"; _href "#"]  [
-              str "WLI"
+    div [_class "login-page"]  [
+      div [_class "login-section"]  [
+        div [_class "contanier col-50 brand"]  [
+          div [_class "title-section"]  [
+            h1 [_class "title"]  [
+              str "Welcome to Members of"
+              br []
+              str "Riverside Golf Club"
             ]
-            button [_class "navbar-toggler"; _type "button"; _dataBsToggle "collapse"; _dataBsTarget "#navbarNav"; _ariaControls "navbarNav"; _ariaExpanded "false"; _ariaLabel "Toggle navigation"]  [
-              span [_class "navbar-toggler-icon"] []
+          ]
+          div [_class "login-container"]  [
+            div [_id "error"]  [
             ]
-            div [_class "collapse navbar-collapse"; _id "navbarNav"]  [
-              ul [_class "navbar-nav me-auto mb-2 mb-lg-0"]  [
-                li [_class "nav-item"]  [
-                  a [_class "nav-link"; _href "/home"]  [
-                    str "Home"
-                  ]
+            form [_action "/security/login.msp"; _method "post"; _name "form"; _id "form"]  [
+              div [_class "form-group"]  [
+                label [_for "username"]  [
+                  str "Membership No."
                 ]
-                li [_class "nav-item"]  [
-                  a [_class "nav-link"; _href "/golf"]  [
-                    str "Golf"
-                  ]
+                input [_name "action"; _type "hidden"; _id "action"; _value "login"]
+                input [_autocomplete "on"; _type "text"; _name "user"; _value ""; _size "11"; _maxlength "32"; _placeholder "Type here..."]
+              ]
+              div [_class "form-group"]  [
+                label [_for "username"]  [
+                  str "Password"
                 ]
-                li [_class "nav-item"]  [
-                  a [_class "nav-link"; _href "/blogs"]  [
-                    str "Blogs"
-                  ]
+                input [_name "action"; _type "hidden"; _id "action"; _value "password"]
+                input [_autocomplete "on"; _type "password"; _name "password"; _value ""; _size "11"; _maxlength "64"; _placeholder "Type here..."]
+              ]
+              div [_class "button-container"]  [
+                input [_type "submit"; _value "Sign In"; _border "0"; _alt "Sign In"; _name "Sign In"; _id "submitBtn"]
+                a [_class "btn-dark"; _href "/security/passwordReminder.msp"]  [
+                  str "Forgot Password"
                 ]
-                li [_class "nav-item"]  [
-                  a [_class "nav-link"; _href "/visited"]  [
-                    str "Visited"
-                  ]
+              ]
+              p [_class "help"]  [
+                a [_href "https://1golfhelp.miclub.com.au/support/solutions/articles/14000151370-login-help-for-onegolf"; _target "_blank"]  [
+                  str "Need help logging on?"
                 ]
               ]
             ]
           ]
         ]
-      ]
-      main [_class "container-fluid"]  [
-        div [_class "container-fluid"; _id "conta"]  [
-          div [] [
-            div [_class "mt-2"]  [
-              span [] [
-                span [_class "h2"]  [
-                  str "John Ardley"
-                ]
-                span [_class "ms-2"; _style "font-size: 8pt;"]  [
-                  str "2025-05-01"
-                ]
-              ]
-              div [_class "mt-2"]  [
-                p [] [
-                  str "On my fathers side of the family John Ardley was the first of my ancestors to arrive in Australia. He was born in Coggeshall, Essex, England on 11 April 1807. He married Mary Gamble on 17 Feburary 1825, they had two children Eliza &amp; William."
-                ]
-                p [] [
-                  str "On the 13th December 1828 he was convicted for stealing. A newspaper report from The Standard, London says"
-                ]
-                p [] [
-                  str "\"John Ardley was indicted for having, in company with another person unknown, broken and entered the dwelling house of Francis Ruffle, of Earl's Colne, and stealing therefrom a pocket book, containing a 5/- Bank of England note, a 5/- note of the Braintree Bank, 5/- 10s in sovereigns and half sovereigns, and 11/- 1s in silver, and various other property. The prisoner, in his defence, denied all knowledge of the robbery. The jury returned a verdict of Guilty. Mr Justice Burrough directed judgment of death to be recorded against the prisoner, and at the same time intimated to him, that although his life would be spared, he must expect to leave the country for life.\""
-                ]
-                p [] [
-                  str "He didn&rsquo;t want to go to Australia as this story from the Essex Herald dated 27th January 1829 makes clear."
-                ]
-                p [] [
-                  str "&ldquo;An attempt was made on Friday night week by Ardley, convicted of the burglary at Earls Colne, and sentenced to transportation for life, who was confined in a cell with two others, to penetrate the wall of his cell. He had evidently worked hard the whole of the night; his labour, however, but ill repaid him. He had removed, apparently with a chisel, the interior course of bricks, about 12 inches square ;.having accomplished thus much, his difficulties increased, by the tight manner in which the bricks were wedged in, as well as by the weight above them; the want of room to give effect to his tool was also another obstacle. It was suspected that two men, who slept in the same cell with Ardley, had assisted in making the breach, but their declarations to the contrary, and the circumstance of their periods of imprisonment expiring within a few days, gave a favourable colour to their plea of being asleep during the time Ardley laboured, or they had been tried for aiding and assisting in the escape of a prisoner, and, if convicted, might have been transported for life. The attempt has now been made, for the first time, to get out, and the result will, without doubt, operate as a convincing proof escape impracticable. Had Ardley succeeded in penetrating the wall of his cell, he would have been at least 25 feet from the ground; and would have still been opposed in his escape by the exterior wall of the prison, which is about 20 feet high. Ardley was among the transportees removed on Tuesday morning.&rdquo;"
-                ]
-                p [] [
-                  str "He arrived in Australia 9th July 1829. He was described as being a &ldquo;Fisherman and Labourer, 5 feet 5, ruddy freckled complexion, brown hair, with light hazel eyes&rdquo; He was assigned to various people and eventually ended up in the Canberra / Monaro region."
-                ]
-                p [] [
-                  str "Below are copies of &ldquo;Ticket of Leave&rdquo; that he was given (click on them to see them full size). They were all given at Queanbeyan Courthouse. He died on the 25th December 1846 at Maneroo. I am not sure if Maneroo is a station or simply refers to the Monaro region (Maneroo was an early name for the Monaro). &nbsp;There is an image below of that is a list of unclaimed letters showing him living at Maneroo."
-                ]
-                p [] [
-                  str "His brothers William &amp; Robert were also transported to Australia as convicts. At various time his sister Francis (accompied by John's daughter Eliza), brother Samuel and son William all emigrated to Australia."
-                ]
-                div [_class "row"]  [
-                  div [_class "col"]  [
-                    a [_href "../../images/IMG_0507.jpg"; _target "_blank"; _rel "noopener"]  [
-                      img [_class "rounded"; _src "../../images/IMG_0507.jpg"; _alt ""; _width "200"; _height "300"]
-                    ]
-                  ]
-                  div [_class "col"]  [
-                    a [_href "../../images/IMG_0508.jpg"; _target "_blank"; _rel "noopener"]  [
-                      img [_class "rounded"; _src "../../images/IMG_0508.jpg"; _alt ""; _width "200"; _height "300"]
-                    ]
-                  ]
-                  div [_class "col"]  [
-                    a [_href "../../images/IMG_0511.jpg"; _target "_blank"; _rel "noopener"]  [
-                      img [_class "rounded"; _src "../../images/IMG_0511.jpg"; _alt ""; _width "200"; _height "300"]
-                    ]
-                  ]
-                  div [_class "col"]  [
-                    a [_href "../../images/JohnArdleyManeroo.jpg"; _target "_blank"; _rel "noopener"]  [
-                      img [_class "rounded"; _src "../../images/JohnArdleyManeroo.jpg"; _alt ""; _width "200"; _height "300"]
-                    ]
-                  ]
-                ]
-              ]
+        div [_class "container text-section col-50 black"]  [
+          div [_class "text-container"]  [
+            p [] [
+              str "Your username is your membership number (the last four digits of your Golflink number removing leading 0s. e.g. 0035 becomes 35) and your new password is now your birth day and month (e.g. \"0705\" for 7 May). If this is unsuccessful, try the default password of 0101 then update your Date of Birth once logged in and also change the password to match this."
             ]
-            div [_class "mt-2"]  [
-              span [] [
-                span [_class "h2"]  [
-                  str "Oops I did it again"
-                ]
-                span [_class "ms-2"; _style "font-size: 8pt;"]  [
-                  str "2025-04-11"
-                ]
-              ]
-              div [_class "mt-2"]  [
-                p [] [
-                  str "PHP &amp; Htmx are all ok, but my real expertise lies in the .NET environment. One of the interests I have always had was in functional programming and revamping this website in F# seemed like a great opportunity for me to explore functional programming. So here it is, written in F# using&nbsp;"
-                  a [_href "https://giraffe.wiki/docs"; _target "_blank"; _rel "noopener"]  [
-                    str "Giraffe"
-                  ]
-                  str ". It also seemed like a good time to have a look at"
-                  a [_href "https://www.cloudflare.com/en-au/"; _target "_blank"; _rel "noopener"]  [
-                    str "Cloudflare"
-                  ]
-                  str ", you now accessing this site through Cloudflare."
-                ]
-              ]
+            h2 [] [
+              str "Terms and Conditions"
             ]
-            div [_class "mt-2"]  [
-              span [] [
-                span [_class "h2"]  [
-                  str "Im back after a short break."
-                ]
-                span [_class "ms-2"; _style "font-size: 8pt;"]  [
-                  str "2023-05-16"
-                ]
+            p [] [
+              str "This Web site is provided by Riverside Golf Club. By using the site or downloading materials from the site, you agree to abide by the"
+              a [_href "/guests/terms/terms_conditions.mhtml"]  [
+                str "terms and conditions"
               ]
-              div [_class "mt-2"]  [
-                p [] [
-                  str "I created this website in 2013 to record a trip that I made around Australia. When I finished it I got a bit slack and didn't add new content. However I did use the site to explore different web based technologies, it has variously been rewritten as plain HTML, python CGI, Mithril, Angular, ASP.NET, PHP &amp; htmx. Currently it is a mixture of htmx and PHP. Anyway I am going to to start adding new content at some stage or maybe I won't."
-                ]
-              ]
+              str "."
             ]
           ]
         ]
       ]
-      footer [_class "container-fluid"]  [
-        div [_class "ms-4"]  [
-          hr []
-          small [] [
-            str "&#169; 2025 Wayne Innes"
-          ]
+    ]
+    footer [_id "footerArea"]  [
+      p [_class "footerLeft footer-col"]  [
+        a [_href "https://www.instagram.com/miclub/"; _target "_blank"]  [
+          img [_src "/product-images/onegolf-instagram.png"; _alt "Instagram"]
+        ]
+        a [_href "https://www.facebook.com/miclubsoftware/"; _target "_blank"]  [
+          img [_src "/product-images/onegolf-facebook.png"; _alt "Facebook"]
+        ]
+        a [_href "https://www.youtube.com/channel/UCMjUZxM8umaCYh26lyV4y6g"; _target "_blank"]  [
+          img [_src "/product-images/onegolf-youtube.png"; _alt "Youtube"]
+        ]
+        a [_href "https://www.linkedin.com/company/2294371/"; _target "_blank"]  [
+          img [_src "/product-images/onegolf-linkedin.png"; _alt "Linkedin"]
         ]
       ]
-      script [_src "https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"; _integrity "sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"; _crossorigin "anonymous"]  [
+      p [_class "footerCenter footer-col"]  [
+        str "&copy; OneGolf 2025 |"
+        a [_href "mailto:support@miclub.com.au"]  [
+          str "support@miclub.com.au"
+        ]
       ]
-      script [_src "https://cdn.tiny.cloud/1/ixf31ja444m6qxs1pewq1jixp57vt290az8r65dltenyb2lu/tinymce/6/tinymce.min.js"]  [
+      p [_class "footerRight footer-col"]  [
+        a [_href "http://www.miclub.com.au/welcome/index.mhtml"; _target "_blank"]  [
+          img [_src "/product-images/onegolf-miclub-white.png"; _alt "Powered by MiClub Online"]
+        ]
+        a [_href "https://miscore.com.au/cms/"; _target "_blank"]  [
+          img [_src "/product-images/onegolf-miscore-white.png"; _alt "MiScore"]
+        ]
+        a [_href "https://teenet.com.au/teenet"; _target "_blank"]  [
+          img [_src "/product-images/onegolf-teenet-white.png"; _alt "TeeNet"]
+        ]
+        a [_href "https://www.mitournament.com/"; _target "_blank"]  [
+          img [_src "/product-images/onegolf-mitournament-white.png"; _alt "MiTournament"]
+        ]
       ]
-      link [_rel "stylesheet"; _href "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"]
+    ]
+    script [] [
+      rawText """
+  const offcanvas = document.getElementById('offcanvasExample');
+  const backdrop = document.getElementById('offcanvasBackdrop');
+  const openBtn = document.getElementById('openOffcanvasBtn');
+  const closeBtn = document.getElementById('offcanvasCloseBtn');
+
+  var today = new Date();
+  var year = today.getFullYear();
+
+  // Open Offcanvas and show backdrop
+  openBtn.addEventListener('click', function () {
+    backdrop.style.visibility = 'visible';
+    offcanvas.classList.add('show');
+  });
+
+  // Close Offcanvas and hide backdrop
+  function closeOffcanvas() {
+    backdrop.style.visibility = 'hidden';
+    offcanvas.classList.remove('show');
+  }
+
+  // Close Offcanvas when close button is clicked
+  closeBtn.addEventListener('click', closeOffcanvas);
+
+  // Close Offcanvas when clicking on the backdrop (outside the Offcanvas)
+  backdrop.addEventListener('click', closeOffcanvas);
+"""
+    ]
+    script [_language "JavaScript"; _type "text/javascript"]  [
+      rawText """document.forms['form'].elements['user'].focus();"""
     ]
   ]
+]
 
 
+
+
+let f2 = RenderView.AsString.htmlNode f1
+
+printfn "%s" f2

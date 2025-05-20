@@ -45,9 +45,19 @@ let ``getFromString empty div`` () =
 
 [<Test>]
 let ``getFromString with data, aria, and hx attributes`` () =
-    let expected = "div [_dataTest \"abc\"; _ariaLabel \"label\"; _hxPost \"/api\"] []\n"
+    let expected = "div [_data \"test\" \"abc\"; _ariaLabel \"label\"; _hxPost \"/api\"] []\n"
     let actual = 
         match "<div data-test=\"abc\" aria-label=\"label\" hx-post=\"/api\"></div>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
+
+// Test aria attributes
+[<Test>]
+let ``getFromString with aria attributes`` () =
+    let expected = "div [_ariaLabel \"label\"; _ariaColSpan \"true\"] []\n"
+    let actual = 
+        match "<div aria-label=\"label\" aria-colspan=\"true\"></div>" |> getFromString with
         | Ok s -> s
         | Error e -> failwith e
     Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
@@ -70,12 +80,12 @@ let ``getFromString with comment`` () =
         | Error e -> failwith e
     Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
 
-[<Test>]
 // Test for role attribute
+[<Test>]
 let ``getFromString with role attribute`` () =
-    let expected = "div [_role \"button\"] []\n"
+    let expected = "div [_roleButton; _roleColumnHeader] []\n"
     let actual = 
-        match "<div role=\"button\"></div>" |> getFromString with
+        match "<div role=\"button\" role=\"columnheader\"></div>" |> getFromString with
         | Ok s -> s
         | Error e -> failwith e
     Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
@@ -83,9 +93,9 @@ let ``getFromString with role attribute`` () =
 // Test for script tag
 [<Test>]
 let ``getFromString with script tag`` () =
-    let expected = "script [] [\n  str \"console.log('Hello World');\"\n]\n"
+    let expected = "script [] [\n  rawText \"\"\"console.log('ZZZZZZ');\"\"\"\n]\n"
     let actual = 
-        match "<script>console.log('Hello World');</script>" |> getFromString with
+        match "<script>console.log('ZZZZZZ');</script>" |> getFromString with
         | Ok s -> s
         | Error e -> failwith e
     Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
@@ -132,7 +142,7 @@ let ``parseHtml with img tag`` () =
 
 // Test for aria attributes
 [<Test>]
-let ``getFromString with aria attributes`` () =
+let ``getFromString with aria camel case attributes`` () =
     let expected = "div [_ariaLabel \"label\"; _ariaHidden \"true\"] []\n"
     let html = getFromString "<div aria-label=\"label\" aria-hidden=\"true\"></div>"
     let actual = 
@@ -248,3 +258,52 @@ let ``getFromString with pre tag`` () =
         | Ok s -> s
         | Error e -> failwith e
     Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
+
+// Test style tag
+[<Test>]
+let ``getFromString with style tag`` () =
+    let expected = "style [] [\n  str \"body { background-color: #fff; }\"\n]\n"
+    let actual = 
+        match "<style>body { background-color: #fff; }</style>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
+
+// Test for svg tag
+[<Test>]
+let ``getFromString with svg tag`` () =
+    let actual = 
+        match "<svg aria-hidden=\"true\" class=\"kTpHl\" focusable=\"false\" height=\"1em\" width=\"1em\"><use xlink:href=\"#icon-weather-bom\"></use></svg>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Substring(0, 7), Is.EqualTo("rawText"))
+
+// Test meta tag with http-equiv
+[<Test>]
+let ``getFromString with meta tag and http-equiv`` () =
+    let expected = "meta [_httpEquiv \"X-UA-Compatible\"; _content \"IE=edge\"]\n"
+    let actual = 
+        match "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Trim(), Is.EqualTo(expected.Trim()))
+
+// Test for mouse events
+[<Test>]
+let ``getFromString with mouse events`` () =
+    let expected = "div [_onclick \"handleClick\"; _onmouseover \"handleMouseOver\"] []\n"
+    let actual = 
+        match "<div onclick=\"handleClick\" onmouseover=\"handleMouseOver\"></div>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Trim(), Is.EqualTo(expected.Trim()))
+
+// Test for flag attributes
+[<Test>]
+let ``getFromString with flag attributes`` () =
+    let expected = "input [_checked; _disabled]\n"
+    let actual = 
+        match "<input checked disabled>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Trim(), Is.EqualTo(expected.Trim()))

@@ -21,17 +21,79 @@ let private isFlagElement =  function
 
 // e.g. data-bs-toggle => _dataBsToggle"
 let private fixData (attr: HtmlAttribute) =
-    let mutable bits = attr.Name.Split('-') |> Array.skip 1
-    let name = "_data" +  (("", bits) ||> Array.fold (
-            fun acc x -> acc + string (Char.ToUpper(x[0])) + x.Substring(1))) 
-    $"{name} \"{attr.Value}\""
+    let mutable bits = attr.Name.Split('-') |> Array.skip 1   
+    let name = (("", bits) ||> Array.fold (
+            fun acc x -> if acc = "" then acc + x else acc + "-" + x)) 
+    $"_data \"{name}\" \"{attr.Value}\""
 
 // e.g. aria-label => _ariaLabel
 let private fixAria (attr: HtmlAttribute) =
     let bits = attr.Name.Split('-')
-    let name = "_" + bits[0] + string (Char.ToUpper(bits[1][0])) + bits[1].Substring(1);
-    $"{name} \"{attr.Value}\""
+    match bits[1] with
+    | "activedescendant" -> "_ariaActiveDescendant" + $" \"{attr.Value}\""
+    | "autoComplete" -> "_ariaAutoComplete" + $" \"{attr.Value}\""
+    | "colcount" -> "_ariaColCount" + $" \"{attr.Value}\""
+    | "colindex" -> "_ariaColIndex" + $" \"{attr.Value}\""
+    | "colspan" -> "_ariaColSpan" + $" \"{attr.Value}\""
+    | "describedby" -> "_ariaDescribedBy" + $" \"{attr.Value}\""
+    | "dropEffect" -> "_ariaDropEffect" + $" \"{attr.Value}\""
+    | "errormessage" -> "_ariaErrorMessage" + $" \"{attr.Value}\""
+    | "flowto" -> "_ariaFlowTo" + $" \"{attr.Value}\""
+    | "haspopup" -> "_ariaHasPopup" + $" \"{attr.Value}\""
+    | "keyshortcuts" -> "_ariaKeyShortcuts" + $" \"{attr.Value}\""
+    | "labelledby" -> "_ariaLabelledBy" + $" \"{attr.Value}\""
+    | "multiselectable" -> "_ariaMultiSelectable" + $" \"{attr.Value}\""
+    | "posinset" -> "_ariaPosInSet" + $" \"{attr.Value}\""
+    | "readonly" -> "_ariaReadOnly" + $" \"{attr.Value}\""
+    | "roleDescription" -> "_ariaRoleDescription" + $" \"{attr.Value}\""
+    | "rowcount" -> "_ariaRowCount" + $" \"{attr.Value}\""
+    | "rowindex" -> "_ariaRowIndex" + $" \"{attr.Value}\""
+    | "rowspan" -> "_ariaRowSpan" + $" \"{attr.Value}\""
+    | "setsize" -> "_ariaSetSize" + $" \"{attr.Value}\""
+    | "valuemax" -> "_ariaValueMax" + $" \"{attr.Value}\""
+    | "valuemin" -> "_ariaValueMin" + $" \"{attr.Value}\""
+    | "valuenow" -> "_ariaValueNow" + $" \"{attr.Value}\""
+    | "valuetext" -> "_ariaValueText" + $" \"{attr.Value}\""
+    | _ ->
+        let name = "_" + bits[0] + string (Char.ToUpper(bits[1][0])) + bits[1].Substring(1);
+        $"{name} \"{attr.Value}\""
 
+let fixRole (attr: HtmlAttribute) =
+    match attr.Value with
+    | "alertdialog" -> "_roleAlertDialog" 
+    | "checkbox" -> "_roleCheckBox" 
+    | "columnheader" -> "_roleColumnHeader" 
+    | "combobox" -> "_roleComboBox" 
+    | "contentinfo" -> "_roleContentInfo"
+    | "gridcell" -> "_roleGridCell" 
+    | "listbox" -> "_roleListBox" 
+    | "listitem" -> "_roleListItem"
+    | "menubar" -> "_roleMenuBar" 
+    | "menuitem" -> "_roleMenuItem" 
+    | "menuitemcheckbox" -> "_roleMenuItemCheckBox" 
+    | "menuitemradio" -> "_roleMenuItemRadio" 
+    | "progressbar" -> "_roleProgressBar" 
+    | "radiogroup" -> "_roleRadioGroup" 
+    | "rowheader" -> "_roleRowHeader"
+    | "searchbox" -> "_roleSearchBox" 
+    | "spinbutton" -> "_roleSpinButton" 
+    | "tablist" -> "_roleTabList" 
+    | "tabpanel" -> "_roleTabPanel" 
+    | "textbox" -> "_roleTextBox"
+    | "toolbar" -> "_roleToolBar" 
+    | "tooltip" -> "_roleToolTip" 
+    | "treeitem" -> "_roleTreeItem" 
+    | "treegrid" -> "_roleTreeGrid" 
+    | _ ->
+        let name = "_role" + string (Char.ToUpper(attr.Value[0])) + attr.Value.Substring(1);
+        $"{name}"
+
+let fixAttribute (attr: HtmlAttribute) =
+    match attr.Name with
+    | "http-equiv" -> "_httpEquiv" + $" \"{attr.Value}\""
+    | "accept-charset" -> "_acceptCharset" + $" \"{attr.Value}\""
+    | _ -> $"_{attr.Name} \"{attr.Value}\""
+    
 // e.g. hx-post => _hxPost
 let private fixHtmx (attr: HtmlAttribute) =
     let bits = attr.Name.Split('-') |> Array.skip 1
@@ -49,8 +111,9 @@ let private attributesToString  (attributes: HtmlAttributeCollection)  =
                 | name when name.StartsWith("data-") -> fixData attr
                 | name when name.StartsWith("aria-") -> fixAria attr
                 | name when name.StartsWith("hx-") -> fixHtmx attr
+                | name when name = "role" -> fixRole attr
                 | name when isFlagElement name -> $"_{attr.Name}"
-                | _ -> $"_{attr.Name} \"{attr.Value}\""
+                | _ -> fixAttribute attr
             attList <- attList @ [attrStr]
     attList
 
@@ -70,20 +133,28 @@ let private processAttributes(node: HtmlNode) =
 
 let rec private traverse (node: HtmlNode) (depth: int) (sb: StringBuilder)=
     if node.NodeType = HtmlNodeType.Element then
-        sb.Append($"{new string(' ', depth * 2)}{node.Name} ") |> ignore
-        sb.Append(processAttributes node) |> ignore
+        if node.Name = "svg" then
+            sb.Append($"{new string(' ', depth * 2)}rawText \"\"\"{node.OuterHtml}\"\"\"") |> ignore
+        else
+            sb.Append($"{new string(' ', depth * 2)}{node.Name} ") |> ignore
+            sb.Append(processAttributes node) |> ignore
 
-    if node.ChildNodes.Count > 0 then
-        sb.Append("[\n") |> ignore
-        for child in node.ChildNodes do
-            traverse child (depth + 1) sb
-        if node.NodeType = HtmlNodeType.Element then
-            sb.Append($"{new string(' ', depth * 2)}]\n") |> ignore
-    else
-        if node.NodeType = HtmlNodeType.Text then
-            if String.IsNullOrWhiteSpace(node.InnerText.Trim()) = false then
-                let trimmedText = node.InnerText.Trim().Replace("\"", "\\\"")
-                sb.Append($"{new string(' ', depth * 2)}str \"{trimmedText}\"\n") |> ignore
+    if node.Name <> "svg" then
+        if node.ChildNodes.Count > 0 then
+            sb.Append("[\n") |> ignore
+            for child in node.ChildNodes do
+                traverse child (depth + 1) sb
+            if node.NodeType = HtmlNodeType.Element then
+                sb.Append($"{new string(' ', depth * 2)}]\n") |> ignore
+        else
+            if node.NodeType = HtmlNodeType.Text then
+                if String.IsNullOrWhiteSpace(node.InnerText.Trim()) = false then
+                    if node.ParentNode.Name = "script" then
+                        sb.Append($"{new string(' ', depth * 2)}rawText \"\"\"{node.InnerText}\"\"\"\n") |> ignore
+                    else
+                        let trimmedText = node.InnerText.Trim().Replace("\"", "\\\"")
+                        sb.Append($"{new string(' ', depth * 2)}str \"{trimmedText}\"\n") |> ignore
+                    
 
 
 let private parseHtml (htmlDoc: HtmlDocument) =
@@ -105,8 +176,14 @@ let getFromWeb (url: string) =
     | _ when not (url.StartsWith("http://") || url.StartsWith("https://")) -> Error "URL must start with http:// or https://"
     | _ ->
         try
+            // Load the document to determine encoding       
+            let encodingWeb = new HtmlWeb()
+            let encodingDoc = encodingWeb.Load(url)
+            let encoding = encodingDoc.Encoding
+
+            // Load the document with the correct encoding
             let web = new HtmlWeb()
-            web.OverrideEncoding <- Encoding.UTF8;
+            web.OverrideEncoding <- encoding
             parseHtml (web.Load(url))
         with
         | :? System.Net.WebException as ex -> Error $"Web exception: {ex.Message}"

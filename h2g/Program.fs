@@ -2,36 +2,22 @@
 
 [<EntryPoint>]
 let main argv =
-    let html2 = getFromWeb("http://www.wayneinnes.com")
-    let html = getFromString"<div hx-post=\"mouse_entered\" hx-swap-oob=\"#alert\" hx-trigger=\"mouseenter\" checked id=\"1\"><b>[Here Mouse, Mouse]</b><hr/></div>"
-    let html1 = getFromString "<body><div><hr>alalala</div><p></p><link rel=\"stylesheet\"><!-- a commnet --></body>"
-    let html3 = getFromString "<div id=\"1\">Test</div>"
-    let html4 = getFromString @"<form action=""dologin"" method=""post"">
-                <div class=""mb-3 row has-validation"">
-                    <label class=""form-label"" for=""email"">Email Address</label>
-                    <div class=""col-sm-12"">
-                        <input class=""form-control"" type=""text"" id=""email"" name=""email"" value="""">
-                    </div>
-                </div>
-                <div class=""mb-3 row has-validation"">
-                    <label class=""form-label"" for=""password"">Password</label>
-                    <div class=""col-sm-12"">
-                        <div class=""input-group"">
-                            <input class=""form-control"" type=""password"" id=""password"" name=""password"" required>
-                            <span class=""input-group-text bi-eye-slash"" id=""togglePassword-password"" style=""cursor: pointer""></span>
-                        </div>
-                    </div>
-                </div>
-                <div class=""m-1 row"">
-                    <div></div>
-                    <div>
-                        <button type=""submit"" value=""login"" id=""btnSubmit"" class=""btn btn-primary m-2"">Login</button>
-                    </div>
-                </div>
-            </form>"
-    let html5 = getFromString "<input type=\"text\" title=\"email_address\" autocomplete=\"off\" required pattern=\"[^@]+@[^@]+.[a-zA-Z]{2,6}\" />"
-    match html2 with
-    | Ok s -> printfn "%s" s
+   
+    if argv.Length < 2 then
+        printfn "Usage: h2g.exe -w|-f|-s <input>"
+        printfn "  -w: Get HTML from a web URL"
+        printfn "  -f: Get HTML from a file"
+        printfn "  -s: Get HTML from a string"
+        1
+    else
+    let result = match argv[0] with
+                 | "-w" -> getFromWeb argv[1]
+                 | "-f" -> getFromFile argv[1] 
+                 | "-s" -> getFromString argv[1] 
+                 | _ -> Error "Invalid argument. Use 'w' for web, 'f' for file, or 's' for string."
+
+    match result with
+    | Ok actual -> printfn "%s" actual
     | Error e -> printfn "Error: %s" e
 
     0
