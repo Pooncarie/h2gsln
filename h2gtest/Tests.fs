@@ -150,6 +150,14 @@ let ``getFromString with malformed html`` () =
     | Ok actual -> Assert.Fail $"Expected error but got: {actual}"
     | Error e -> Assert.That(e, Is.EqualTo(expected))
 
+// Test for unclosed tag
+[<Test>]
+let ``getFromString with unclosed tag`` () =
+    let expected = "div [] [\n  span [] []\n]\n"
+    match "<div><span></div>" |> getFromString with
+    | Ok actual -> Assert.That(actual, Is.EqualTo(expected))
+    | Error e -> failwith e
+
 // Test for null html
 [<Test>]
 let ``getFromString with null html`` () =
@@ -230,3 +238,13 @@ let ``getFromWeb with non-existent url`` () =
     match getFromWeb "http://www.nonexistentwebsite.com" with
     | Ok s ->  Assert.Fail $"Expected error but got: {s}"
     | Error e ->  Assert.That(e.Contains("exception:"), Is.EqualTo(true))
+
+// Test pre tag
+[<Test>]
+let ``getFromString with pre tag`` () =
+    let expected = "pre [] [\n  str \"Preformatted text\"\n]\n"
+    let actual = 
+        match "<pre>Preformatted text</pre>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
