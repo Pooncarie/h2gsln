@@ -1,8 +1,9 @@
 ﻿open h2glib
+open System
 
 [<EntryPoint>]
 let main argv =
-   
+
     if argv.Length < 2 then
         printfn "Usage: h2g.exe -w|-f|-s <input>"
         printfn "  -w: Get HTML from a web URL"

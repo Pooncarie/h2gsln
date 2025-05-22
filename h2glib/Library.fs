@@ -171,7 +171,6 @@ let private parseHtml (htmlDoc: HtmlDocument) =
 
 let getFromWeb (url: string) =
     match url with
-    | null -> Error "URL cannot be null"
     | _ when url.Trim() = "" -> Error "URL cannot be empty"
     | _ when not (url.StartsWith("http://") || url.StartsWith("https://")) -> Error "URL must start with http:// or https://"
     | _ ->
@@ -192,7 +191,6 @@ let getFromWeb (url: string) =
 
 let getFromFile (file: string) =
     match file with
-    | null -> Error "File path cannot be null"
     | _ when file.Trim() = "" -> Error "File path cannot be empty"
     | _ when not (System.IO.File.Exists(file)) -> Error "File does not exist"
     | _ ->
@@ -207,7 +205,6 @@ let getFromFile (file: string) =
         
 let getFromString (html: string) =
     match html with
-    | null -> Error "HTML string cannot be null"
     | _ when html.Trim() = "" -> Error "HTML string cannot be empty"
     | _ ->
         let doc = new HtmlDocument();

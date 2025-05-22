@@ -168,14 +168,6 @@ let ``getFromString with unclosed tag`` () =
     | Ok actual -> Assert.That(actual, Is.EqualTo(expected))
     | Error e -> failwith e
 
-// Test for null html
-[<Test>]
-let ``getFromString with null html`` () =
-    let expected = "HTML string cannot be null"
-    match getFromString null with
-    | Ok actual -> Assert.Fail $"Expected error but got: {actual}"
-    | Error e -> Assert.That(e, Is.EqualTo(expected))
-
 // Test for empty html
 [<Test>]
 let ``getFromString with empty html`` () =
@@ -183,13 +175,6 @@ let ``getFromString with empty html`` () =
     match "" |> getFromString with
     | Ok s ->  Assert.Fail $"Expected error but got: {s}"
     | Error e ->  Assert.That(e, Is.EqualTo(expected))
-
-[<Test>]
-let ``getFromFile with null html`` () =
-    let expected = "File path cannot be null"
-    match getFromFile null with
-    | Ok actual -> Assert.Fail $"Expected error but got: {actual}"
-    | Error e -> Assert.That(e, Is.EqualTo(expected))
 
 // Test for empty html
 [<Test>]
@@ -206,14 +191,6 @@ let ``getFromFile with file not found`` () =
     match "non_existent_file.html" |> getFromFile with
     | Ok s ->  Assert.Fail $"Expected error but got: {s}"
     | Error e ->  Assert.That(e, Is.EqualTo(expected))
-
-// Test getFromWeb with null url
-[<Test>]
-let ``getFromWeb with null url`` () =
-    let expected = "URL cannot be null"
-    match getFromWeb null with
-    | Ok actual -> Assert.Fail $"Expected error but got: {actual}"
-    | Error e -> Assert.That(e, Is.EqualTo(expected))
 
 // Test getFromWeb with empty url
 [<Test>]
