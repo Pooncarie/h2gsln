@@ -23,7 +23,7 @@ open Giraffe.ViewEngine.Accessibility
 open Giraffe.Deprecated
 ```
 
-in your source file
+in the source file that has deprecated elements or attributes.
 
 
 
