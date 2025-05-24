@@ -15,7 +15,15 @@ Contains all of the tests that are used for this project.
 Is a console app that you can add Giraffe views to and ensure that they have converted correctly. There are a couple example conversions in Program.fs
 
 ### Giraffe.Deprecated
-Giraffe.ViewEngine doesn't support deprecated HTML elements or attributes. When converting existing HTML you may not have the luxury of fixing all the deprecations in the HTML. This dll contains Giraffe.ViewEngines functions that dscribe all the deprecated HTML elements & attributes.
+Giraffe.ViewEngine doesn't support deprecated HTML elements or attributes. When converting existing HTML you may not have the luxury of fixing all the deprecations in the HTML. This dll contains Giraffe.ViewEngines functions that dscribe all the deprecated HTML elements & attributes. You need to
+
+```text
+open Giraffe.ViewEngine
+open Giraffe.ViewEngine.Accessibility
+open Giraffe.Deprecated
+```
+
+in your source file
 
 
 
