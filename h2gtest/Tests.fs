@@ -284,3 +284,15 @@ let ``getFromString with flag attributes`` () =
         | Ok s -> s
         | Error e -> failwith e
     Assert.That(actual.Trim(), Is.EqualTo(expected.Trim()))
+
+// Test get from file with valid file
+[<Test>]
+let ``getFromFile with valid file`` () =
+    let expected = "html [] [\n  body [] [\n    h1 [] [\n      str \"My First Heading\"\n    ]\n    p [] [\n      str \"My first paragraph.\"\n    ]\n  ]\n]\n"
+    let actual = 
+        match "sample.html" |> getFromFile with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
+
+
