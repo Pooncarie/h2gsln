@@ -9,4 +9,7 @@
     <Compile Include="Library.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Giraffe" Version="7.0.2" />
+  </ItemGroup>
 </Project>

@@ -1,25 +1,8 @@
 ﻿open Giraffe.ViewEngine
 open Giraffe.ViewEngine.Accessibility
+open Giraffe.Deprecated
 
-let  _bgcolor = attr "bgcolor"
-let  _cellpadding = attr "cellpadding"
-let  _cellspacing = attr "cellspacing"
-let  _align = attr "align"
-let  _valign = attr "valign"
-let  _autocapitalize = attr "autocapitalize"
-let  _autocorrect = attr "autocorrect"
-let _op = attr "op"
-let _language = attr "language"
-let _itemscope = attr "itemscope"
-let _itemtype = attr "itemtype"
-let _itemprop = attr "itemprop"
-let  center = tag "center"
-let _nonce = attr "nonce"
-let _clear = attr "clear"
-let _nowrap = attr "nowrap"
-let nobr = tag "nobr"
-
-let f1 = 
+let google = 
  html [_itemscope ""; _itemtype "http://schema.org/WebPage"; _lang "en-AU"]  [
   head [] [
     meta [_content "text/html; charset=UTF-8"; _httpEquiv "Content-Type"]
@@ -198,6 +181,6 @@ setTimeout(function(){google&&google.tick&&google.timers&&google.timers.load&&go
   ]
 ]
 
-let f2 = RenderView.AsString.htmlNode f1
+let f2 = RenderView.AsString.htmlNode google
 
 printfn "%s" f2

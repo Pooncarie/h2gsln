@@ -13,4 +13,8 @@
  <ItemGroup>
     <PackageReference Include="Giraffe" Version="7.0.2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Giraffe.Deprecated\Giraffe.Deprecated.fsproj" />
+  </ItemGroup>
 </Project>
