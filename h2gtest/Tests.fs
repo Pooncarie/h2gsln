@@ -73,7 +73,7 @@ let ``getFromString void element`` () =
 
 [<Test>]
 let ``getFromString with comment`` () =
-    let expected = "body [] [\n]\n"
+    let expected = "body [] [\n  rawText \"\"\"<!-- a comment -->\"\"\";\n]\n"
     let actual = 
         match "<body><!-- a comment --></body>" |> getFromString with
         | Ok s -> s
@@ -378,7 +378,7 @@ let ``getFromString with whitespace`` () =
 // Test for comment between elements
 [<Test>]
 let ``getFromString with comment between elements`` () =
-    let expected = "div [] [\n  str \"A\"\n  str \"B\"\n]\n"
+    let expected = "div [] [\n  str \"A\"\n  rawText \"\"\"<!-- comment -->\"\"\";\n  str \"B\"\n]\n"
     let actual =
         match "<div>A<!-- comment -->B</div>" |> getFromString with
         | Ok s -> s

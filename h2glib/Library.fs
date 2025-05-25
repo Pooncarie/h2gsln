@@ -156,6 +156,8 @@ let rec private traverse (node: HtmlNode) (depth: int) (sb: StringBuilder)=
         else
             sb.Append($"{new string(' ', depth * 2)}{node.Name} ") |> ignore
             sb.Append(processAttributes node) |> ignore
+    else if node.NodeType = HtmlNodeType.Comment && node.InnerHtml.StartsWith("<!DOC") = false then
+            sb.Append($"{new string(' ', depth * 2)}rawText \"\"\"{node.InnerHtml}\"\"\";\n") |> ignore        
 
     if node.Name <> "svg" then
         if node.ChildNodes.Count > 0 then

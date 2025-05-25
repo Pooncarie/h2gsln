@@ -2,6 +2,21 @@
 open Giraffe.ViewEngine.Accessibility
 open Giraffe.Deprecated
 
+let sample =
+ html [] [
+  body [] [
+    rawText """<!-- this is a comment -->""";
+    h1 [] [
+      rawText """<!-- another comment -->""";
+      str "My First Heading"
+    ]
+    p [] [
+      str "My first paragraph."
+    ]
+  ]
+]
+
+
 let google = // www.google.com
  html [_itemscope ""; _itemtype "http://schema.org/WebPage"; _lang "en-AU"]  [
   head [] [
