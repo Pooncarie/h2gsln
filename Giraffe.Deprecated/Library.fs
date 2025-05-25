@@ -62,6 +62,9 @@ let _vspace = attr "vspace"
 
 // Not in Giraffe.ViewEngine
 let _nonce = attr "nonce"
+let _loading = attr "loading"
+let _as = attr "as"
+let _nomodule = attr "nomodule"
 
 // Deprecated elements
 let  center = tag "center"

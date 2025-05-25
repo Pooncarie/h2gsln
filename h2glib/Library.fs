@@ -5,6 +5,7 @@ open System.Text
 open System.Linq
 open HtmlAgilityPack
 
+
 let private isSelfClosing (node: HtmlNode) =
     node.NodeType = HtmlNodeType.Element
     && not node.HasChildNodes
@@ -28,7 +29,12 @@ let private isFlagElement =  function
 
 // e.g. data-bs-toggle => _dataBsToggle"
 let private fixData (attr: HtmlAttribute) =
-    let mutable bits = attr.Name.Split('-') |> Array.skip 1   
+    let mutable bits = attr.Name.Split('-')
+    if bits.Length > 1 then 
+        bits <- bits |> Array.skip 1   
+    else
+        bits <- [| attr.Name |]
+
     let name = (("", bits) ||> Array.fold (
             fun acc x -> if acc = "" then acc + x else acc + "-" + x)) 
     $"_data \"{name}\" \"{attr.Value}\""
@@ -36,34 +42,42 @@ let private fixData (attr: HtmlAttribute) =
 // e.g. aria-label => _ariaLabel
 let private fixAria (attr: HtmlAttribute) =
     let bits = attr.Name.Split('-')
-    match bits[1] with
-    | "activedescendant" -> "_ariaActiveDescendant" + $" \"{attr.Value}\""
-    | "autoComplete" -> "_ariaAutoComplete" + $" \"{attr.Value}\""
-    | "colcount" -> "_ariaColCount" + $" \"{attr.Value}\""
-    | "colindex" -> "_ariaColIndex" + $" \"{attr.Value}\""
-    | "colspan" -> "_ariaColSpan" + $" \"{attr.Value}\""
-    | "describedby" -> "_ariaDescribedBy" + $" \"{attr.Value}\""
-    | "dropEffect" -> "_ariaDropEffect" + $" \"{attr.Value}\""
-    | "errormessage" -> "_ariaErrorMessage" + $" \"{attr.Value}\""
-    | "flowto" -> "_ariaFlowTo" + $" \"{attr.Value}\""
-    | "haspopup" -> "_ariaHasPopup" + $" \"{attr.Value}\""
-    | "keyshortcuts" -> "_ariaKeyShortcuts" + $" \"{attr.Value}\""
-    | "labelledby" -> "_ariaLabelledBy" + $" \"{attr.Value}\""
-    | "multiselectable" -> "_ariaMultiSelectable" + $" \"{attr.Value}\""
-    | "posinset" -> "_ariaPosInSet" + $" \"{attr.Value}\""
-    | "readonly" -> "_ariaReadOnly" + $" \"{attr.Value}\""
-    | "roleDescription" -> "_ariaRoleDescription" + $" \"{attr.Value}\""
-    | "rowcount" -> "_ariaRowCount" + $" \"{attr.Value}\""
-    | "rowindex" -> "_ariaRowIndex" + $" \"{attr.Value}\""
-    | "rowspan" -> "_ariaRowSpan" + $" \"{attr.Value}\""
-    | "setsize" -> "_ariaSetSize" + $" \"{attr.Value}\""
-    | "valuemax" -> "_ariaValueMax" + $" \"{attr.Value}\""
-    | "valuemin" -> "_ariaValueMin" + $" \"{attr.Value}\""
-    | "valuenow" -> "_ariaValueNow" + $" \"{attr.Value}\""
-    | "valuetext" -> "_ariaValueText" + $" \"{attr.Value}\""
-    | _ ->
-        let name = "_" + bits[0] + string (Char.ToUpper(bits[1][0])) + bits[1].Substring(1);
-        $"{name} \"{attr.Value}\""
+    if bits.Length < 2 then
+        // If the attribute doesn't follow the expected pattern, return it as is
+        $"_aria \"{attr.Name}\" \"{attr.Value}\""
+    else
+        // e.g. aria-activedescendant => _ariaActiveDescendant "value"
+        match bits[1] with
+        | "activedescendant" -> "_ariaActiveDescendant" + $" \"{attr.Value}\""
+        | "autoComplete" -> "_ariaAutoComplete" + $" \"{attr.Value}\""
+        | "colcount" -> "_ariaColCount" + $" \"{attr.Value}\""
+        | "colindex" -> "_ariaColIndex" + $" \"{attr.Value}\""
+        | "colspan" -> "_ariaColSpan" + $" \"{attr.Value}\""
+        | "describedby" -> "_ariaDescribedBy" + $" \"{attr.Value}\""
+        | "dropEffect" -> "_ariaDropEffect" + $" \"{attr.Value}\""
+        | "errormessage" -> "_ariaErrorMessage" + $" \"{attr.Value}\""
+        | "flowto" -> "_ariaFlowTo" + $" \"{attr.Value}\""
+        | "haspopup" -> "_ariaHasPopup" + $" \"{attr.Value}\""
+        | "keyshortcuts" -> "_ariaKeyShortcuts" + $" \"{attr.Value}\""
+        | "labelledby" -> "_ariaLabelledBy" + $" \"{attr.Value}\""
+        | "multiselectable" -> "_ariaMultiSelectable" + $" \"{attr.Value}\""
+        | "posinset" -> "_ariaPosInSet" + $" \"{attr.Value}\""
+        | "readonly" -> "_ariaReadOnly" + $" \"{attr.Value}\""
+        | "roleDescription" -> "_ariaRoleDescription" + $" \"{attr.Value}\""
+        | "rowcount" -> "_ariaRowCount" + $" \"{attr.Value}\""
+        | "rowindex" -> "_ariaRowIndex" + $" \"{attr.Value}\""
+        | "rowspan" -> "_ariaRowSpan" + $" \"{attr.Value}\""
+        | "setsize" -> "_ariaSetSize" + $" \"{attr.Value}\""
+        | "valuemax" -> "_ariaValueMax" + $" \"{attr.Value}\""
+        | "valuemin" -> "_ariaValueMin" + $" \"{attr.Value}\""
+        | "valuenow" -> "_ariaValueNow" + $" \"{attr.Value}\""
+        | "valuetext" -> "_ariaValueText" + $" \"{attr.Value}\""
+        | _ ->
+        if String.IsNullOrWhiteSpace(attr.Value) || attr.Value.Length < 2 then
+            ""
+        else
+            let name = "_" + bits[0] + string (Char.ToUpper(bits[1][0])) + bits[1].Substring(1);
+            $"{name} \"{attr.Value}\""
 
 // e.g. role="alertdialog" => _roleAlertDialog
 let fixRole (attr: HtmlAttribute) =
@@ -93,8 +107,11 @@ let fixRole (attr: HtmlAttribute) =
     | "treeitem" -> "_roleTreeItem" 
     | "treegrid" -> "_roleTreeGrid" 
     | _ ->
-        let name = "_role" + string (Char.ToUpper(attr.Value[0])) + attr.Value.Substring(1);
-        $"{name}"
+        if String.IsNullOrWhiteSpace(attr.Value) || attr.Value.Length < 2 then
+            ""
+        else
+            let name = "_role" + string (Char.ToUpper(attr.Value[0])) + attr.Value.Substring(1);
+            $"{name}"
 
 let fixAttribute (attr: HtmlAttribute) =
     match attr.Name with
@@ -135,7 +152,7 @@ let private processAttributes(node: HtmlNode) =
 let rec private traverse (node: HtmlNode) (depth: int) (sb: StringBuilder)=
     if node.NodeType = HtmlNodeType.Element then
         if node.Name = "svg" then
-            sb.Append($"{new string(' ', depth * 2)}rawText \"\"\"{node.OuterHtml}\"\"\"") |> ignore
+            sb.Append($"{new string(' ', depth * 2)}rawText \"\"\"{node.OuterHtml}\"\"\";") |> ignore
         else
             sb.Append($"{new string(' ', depth * 2)}{node.Name} ") |> ignore
             sb.Append(processAttributes node) |> ignore
@@ -213,4 +230,3 @@ let getFromString (html: string) =
         parseHtml doc
     
 
-    
