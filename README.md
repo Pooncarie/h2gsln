@@ -28,7 +28,7 @@ in the source file that has deprecated elements or attributes.
 ### Limitations
 - HtmlAgilityPack is used to parse the HTML, if it cannot be parsed by HtmlAgilityPack then you aren't going to get output.
 - As my ability to test the code on a large array of websites is limited you may find that there will be errors.
-- Websites that contain user-defined attributes may not work. For example, if you use HTMX (a library for adding AJAX, CSS transitions, and more to HTML), you are likely going to experience issues. Learn more about HTMX at [https://htmx.org](https://htmx.org).
+- Websites that contain user-defined attributes or user-defined elements may not work. For example, if you use HTMX (a library for adding AJAX, CSS transitions, and more to HTML), you are likely going to experience issues. Learn more about HTMX at [https://htmx.org](https://htmx.org).
 
 
 
