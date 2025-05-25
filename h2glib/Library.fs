@@ -5,12 +5,19 @@ open System.Text
 open System.Linq
 open HtmlAgilityPack
 
-let private isVoidElement (name: string) =
-    match name with
+let private isSelfClosing (node: HtmlNode) =
+    node.NodeType = HtmlNodeType.Element
+    && not node.HasChildNodes
+    && node.Closed
+    && node.OuterHtml.TrimEnd().EndsWith("/>")
+
+let private isVoidElement (node: HtmlNode) =
+    match node.Name with
     | "area" | "base" | "br" | "col" | "embed" | "hr" | "img" | "input" 
     | "link" | "meta" | "param" | "source" | "track" | "wbr" -> true
-    | _ -> false
+    | _ -> isSelfClosing node
 
+        
 let private isFlagElement =  function
     | "async" | "autofocus" | "autoplay" | "checked" | "controls" 
     | "default" | "defer" | "disabled" | "hidden" 
@@ -58,6 +65,7 @@ let private fixAria (attr: HtmlAttribute) =
         let name = "_" + bits[0] + string (Char.ToUpper(bits[1][0])) + bits[1].Substring(1);
         $"{name} \"{attr.Value}\""
 
+// e.g. role="alertdialog" => _roleAlertDialog
 let fixRole (attr: HtmlAttribute) =
     match attr.Value with
     | "alertdialog" -> "_roleAlertDialog" 
@@ -94,12 +102,6 @@ let fixAttribute (attr: HtmlAttribute) =
     | "accept-charset" -> "_acceptCharset" + $" \"{attr.Value}\""
     | _ -> $"_{attr.Name} \"{attr.Value}\""
     
-// e.g. hx-post => _hxPost
-let private fixHtmx (attr: HtmlAttribute) =
-    let bits = attr.Name.Split('-') |> Array.skip 1
-    let name = "_hx" +  (("", bits) ||> 
-        Array.fold (fun acc x -> acc + string (Char.ToUpper(x[0])) + x.Substring(1)))
-    $"{name} \"{attr.Value}\""
 
 let private attributesToString  (attributes: HtmlAttributeCollection)  =
     let mutable attList = []
@@ -110,7 +112,6 @@ let private attributesToString  (attributes: HtmlAttributeCollection)  =
                 match attr.Name with
                 | name when name.StartsWith("data-") -> fixData attr
                 | name when name.StartsWith("aria-") -> fixAria attr
-                | name when name.StartsWith("hx-") -> fixHtmx attr
                 | name when name = "role" -> fixRole attr
                 | name when isFlagElement name -> $"_{attr.Name}"
                 | _ -> fixAttribute attr
@@ -123,12 +124,12 @@ let private processAttributes(node: HtmlNode) =
         let joinedAtts =  ("", attList) ||> List.fold (fun acc x -> if acc = "" then acc + x else acc +  "; " + x)
         match node with
         | n when n.HasChildNodes -> $"[{joinedAtts}]  "
-        | n when isVoidElement n.Name -> $"[{joinedAtts}]\n"
+        | n when isVoidElement n -> $"[{joinedAtts}]\n"
         | _ -> $"[{joinedAtts}] []\n"
     else
         match node with
         | n when n.HasChildNodes -> "[] "
-        | n when isVoidElement n.Name -> "[]\n"
+        | n when isVoidElement n -> "[]\n"
         | _ -> "[] []\n"
 
 let rec private traverse (node: HtmlNode) (depth: int) (sb: StringBuilder)=
@@ -212,3 +213,4 @@ let getFromString (html: string) =
         parseHtml doc
     
 
+    

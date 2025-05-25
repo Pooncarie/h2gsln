@@ -45,7 +45,7 @@ let ``getFromString empty div`` () =
 
 [<Test>]
 let ``getFromString with data, aria, and hx attributes`` () =
-    let expected = "div [_data \"test\" \"abc\"; _ariaLabel \"label\"; _hxPost \"/api\"] []\n"
+    let expected = "div [_data \"test\" \"abc\"; _ariaLabel \"label\"; _hx-post \"/api\"] []\n"
     let actual = 
         match "<div data-test=\"abc\" aria-label=\"label\" hx-post=\"/api\"></div>" |> getFromString with
         | Ok s -> s
@@ -295,4 +295,102 @@ let ``getFromFile with valid file`` () =
         | Error e -> failwith e
     Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
 
+// Test for multiple classes and ids
+[<Test>]
+let ``getFromString with multiple classes and id`` () =
+    let expected = "div [_class \"foo bar\"; _id \"main\"]  [\n  str \"Content\"\n]\n"
+    let actual =
+        match "<div class=\"foo bar\" id=\"main\">Content</div>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
 
+// Test for custom attributes
+[<Test>]
+let ``getFromString with custom attributes`` () =
+    let expected = "div [_custom-attr \"value\"] []\n"
+    let actual =
+        match "<div custom-attr=\"value\"></div>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Trim(), Is.EqualTo(expected.Trim()))
+
+// Test for deeply nested elements
+[<Test>]
+let ``getFromString deeply nested elements`` () =
+    let expected = "div [] [\n  ul [] [\n    li [] [\n      span [] [\n        str \"Item\"\n      ]\n    ]\n  ]\n]\n"
+    let actual =
+        match "<div><ul><li><span>Item</span></li></ul></div>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
+
+// Test for boolean attribute with value
+[<Test>]
+let ``getFromString boolean attribute with value`` () =
+    let expected = "input [_checked]\n"
+    let actual =
+        match "<input checked=\"checked\">" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Trim(), Is.EqualTo(expected.Trim()))
+
+// Test for self-closing custom tag
+[<Test>]
+let ``getFromString self-closing custom tag`` () =
+    let expected = "mytag []\n"
+    let actual =
+        match "<mytag />" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Trim(), Is.EqualTo(expected.Trim()))
+
+// Test for text node with special characters
+[<Test>]
+let ``getFromString text node with special characters`` () =
+    let expected = "div [] [\n  str \"<>&\\\"'\"\n]\n"
+    let actual =
+        match "<div><>&\"'</div>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
+
+// Test for multiple root elements
+[<Test>]
+let ``getFromString with multiple root elements`` () =
+    let expected = "div [] []\nspan [] []\n"
+    let actual =
+        match "<div></div><span></span>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
+
+// Test for whitespace handling
+[<Test>]
+let ``getFromString with whitespace`` () =
+    let expected = "div [] [\n  str \"Test\"\n]\n"
+    let actual =
+        match "<div>   Test   </div>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
+
+// Test for comment between elements
+[<Test>]
+let ``getFromString with comment between elements`` () =
+    let expected = "div [] [\n  str \"A\"\n  str \"B\"\n]\n"
+    let actual =
+        match "<div>A<!-- comment -->B</div>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Replace("\r\n", "\n"), Is.EqualTo(expected.Replace("\r\n", "\n")))
+
+// Test for input with no attributes
+[<Test>]
+let ``getFromString input with no attributes`` () =
+    let expected = "input []\n"
+    let actual =
+        match "<input>" |> getFromString with
+        | Ok s -> s
+        | Error e -> failwith e
+    Assert.That(actual.Trim(), Is.EqualTo(expected.Trim()))
